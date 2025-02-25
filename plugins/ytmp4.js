@@ -1,87 +1,50 @@
-/* Features Play YouTube
- * Base API : https://axeel.my.id/docs
- * Code by : AxellNetwork
- */
-import yts from "yt-search";
-import axios from "axios";
+import fetch from 'node-fetch';
+import axios from 'axios';
 
-// Custom utility function to check if a string is a URL
-const isUrl = (text) => {
+const handler = async (m, { conn, text, usedPrefix, command }) => {
+    if (!text) throw `Usage: ${usedPrefix}${command} <YouTube URL>\nExample: ${usedPrefix}${command} https://youtube.com/watch?v=wjK4_sBuNAM`;
+
     try {
-        new URL(text);
-        return [text];
-    } catch (e) {
-        return false;
-    }
-};
+        const { data } = await axios.get(`https://ytdl-api.caliphdev.com/download/video?url=${encodeURIComponent(text)}`);
+        
+        if (!data?.status) throw 'Failed to download video. Please ensure the URL is valid.';
 
-let handler = async (m, { conn, text }) => {
-    if (!text) return m.reply(" Please enter a search term or URL.");
-    m.reply(" Please wait...");
+        const {
+            videoDetails: { title, cover, lengthSeconds },
+            downloadUrl
+        } = data;
 
-    let txt = "";
-    if (isUrl(text)) {
-        txt = isUrl(text)[0];
-    } else {
-        const searchResults = await yts(text);
-        if (!searchResults.videos || searchResults.videos.length === 0) {
-            return m.reply(" No results found.");
-        }
-        txt = searchResults.videos[0].url; // Use the first video result
-    }
+        if (!downloadUrl) throw 'Download link not found.';
 
-    let { data } = await axios
-        .get("https://ytdl.axeel.my.id/api/download/video?url=" + txt, {
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
+        const caption = `
+🎬 *YouTube MP4 Downloader* 🎬
+    
+📌 *Title*  : ${title || 'Not available'}
+⏳ *Duration* : ${lengthSeconds ? `${lengthSeconds} seconds` : 'Not available'}
+📥 *Downloading video...*
+`;
+
+        await conn.sendMessage(m.chat, {
+            text: caption,
+            contextInfo: {
+                externalAdReply: {
+                    title: title || 'Title not available',
+                    body: 'Downloading video...',
+                    thumbnailUrl: cover || '',
+                },
             },
-        })
-        .catch((e) => {
-            console.error("API Error:", e.message);
-            return m.reply(" Failed to fetch video data.");
         });
 
-    if (!data || !data.metadata || !data.metadata.thumbnail || !data.downloads) {
-        return m.reply(" Invalid video data.");
+        const videoBuffer = await fetch(downloadUrl).then(res => res.buffer());
+        await conn.sendMessage(m.chat, { video: videoBuffer, mimetype: 'video/mp4', fileName: `${title}.mp4` }, { quoted: m });
+    } catch (e) {
+        console.error(e);
+        m.reply('An error occurred while downloading the video. Please try again later.');
     }
-
-    // Ensure thumbnail URL is valid
-    const thumbnailUrl = data.metadata.thumbnail.url || data.metadata.thumbnail;
-    if (!thumbnailUrl) {
-        return m.reply(" Thumbnail not found.");
-    }
-
-    // Ensure download URL is valid
-    const downloadUrl = data.downloads[0]?.url || data.downloads.url;
-    if (!downloadUrl) {
-        return m.reply(" Download link not found.");
-    }
-
-    let cap = "*– YouTube Video Downloader*\n";
-    cap += Object.entries(data.metadata)
-        .map(([a, b]) => `> *- ${a.charAt(0).toUpperCase() + a.slice(1)} :* ${b}`)
-        .join("\n");
-    cap += "\n\nSILANA LITE 🧠";
-
-    await conn.sendMessage(
-        m.chat, {
-            image: { url: thumbnailUrl },
-            caption: cap,
-        }, {
-            quoted: m,
-        },
-    );
-
-    await conn.sendMessage(
-        m.chat, {
-            video: { url: downloadUrl },
-        }, {
-            quoted: m,
-        },
-    );
 };
 
-handler.help = handler.command = ['ytmp4', 'ytv'];
+handler.help = ['ytmp4']
 handler.tags = ['downloader'];
+handler.command = /^(ytmp4)$/i;
+
 export default handler;
