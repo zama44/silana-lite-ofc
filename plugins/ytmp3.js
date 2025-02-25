@@ -1,85 +1,58 @@
-import yts from "yt-search";
-import axios from "axios";
+import fetch from 'node-fetch';
 
-// Define isUrl function outside the handler (if used globally)
-const isUrl = (text) => {
-    try {
-        new URL(text);
-        return [text];
-    } catch (e) {
-        return false;
-    }
-};
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+    let url = text.split(' ')[0];
 
-let handler = async (m, { conn, text }) => {
-    if (!text) return m.reply("Please enter a search term or URL.");
-    m.reply("Please wait...");
-
-    let txt = "";
-    if (isUrl(text)) {
-        txt = isUrl(text)[0];
-    } else {
-        const searchResults = await yts(text);
-        if (!searchResults.videos || searchResults.videos.length === 0) {
-            return m.reply("No results found.");
-        }
-        txt = searchResults.videos[0].url; // Use the first video result
+    if (!url) {
+        return conn.reply(m.chat, `Use the format: ${usedPrefix}${command} <url>`, m);
     }
 
-    let { data } = await axios
-        .get("https://ytdl.axeel.my.id/api/download/audio?url=" + txt, {
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        })
-        .catch((e) => {
-            console.error("API Error:", e.message);
-            return m.reply("Failed to fetch audio data.");
+    // Sending request status message
+    conn.reply(m.chat, 'Sending request...', m);
+
+    let res = await fetch(`https://ytdownloader.nvlgroup.my.id/info?url=${url}`);
+    if (!res.ok) return conn.reply(m.chat, 'Failed to fetch video information', m);
+
+    let info = await res.json();
+    let title = info.title;
+    let duration = info.duration || 'Unknown';
+
+    let downloadUrl = `https://ytdownloader.nvlgroup.my.id/audio?url=${url}&bitrate=128`;
+    let audioRes = await fetch(downloadUrl);
+    if (!audioRes.ok) return conn.reply(m.chat, 'Failed to download audio', m);
+
+    let audioBuffer = await audioRes.buffer();
+    let audioSize = audioBuffer.length / (1024 * 1024);
+
+    let message = `
+🎵 *Title:* ${title}
+🔗 *Link:* [Listen Here](${url})
+⏱️ *Duration:* ${duration} minutes
+📦 *File Size:* ${audioSize.toFixed(2)} MB
+`;
+
+    await conn.reply(m.chat, message, m);
+
+    // Success status message
+    conn.reply(m.chat, 'Request successfully sent', m);
+
+    if (audioSize > 100) {
+        await conn.sendMessage(m.chat, {
+            document: audioBuffer,
+            mimetype: 'audio/mpeg',
+            fileName: `${title}.mp3`
         });
-
-    if (!data || !data.metadata || !data.metadata.thumbnail || !data.downloads) {
-        return m.reply("Invalid audio data.");
+    } else {
+        await conn.sendMessage(m.chat, {
+            audio: audioBuffer,
+            mimetype: "audio/mpeg",
+            ptt: true // Sends as a voice note
+        }, { quoted: m });
     }
-
-    // Ensure thumbnail URL is valid
-    const thumbnailUrl = data.metadata.thumbnail.url || data.metadata.thumbnail;
-    if (!thumbnailUrl) {
-        return m.reply("Thumbnail not found.");
-    }
-
-    // Ensure download URL is valid
-    const downloadUrl = data.downloads[0]?.url || data.downloads.url;
-    if (!downloadUrl) {
-        return m.reply("Download link not found.");
-    }
-
-    let cap = "*– YouTube Audio Downloader*\n";
-    cap += Object.entries(data.metadata)
-        .map(([a, b]) => `> *- ${a.charAt(0).toUpperCase() + a.slice(1)} :* ${b}`)
-        .join("\n");
-    cap += "\n\nSILANA LITE 🧠";
-
-    await conn.sendMessage(
-        m.chat, {
-            image: { url: thumbnailUrl },
-            caption: cap,
-        }, {
-            quoted: m,
-        },
-    );
-
-    await conn.sendMessage(
-        m.chat, {
-            audio: { url: downloadUrl },
-            mimetype: "audio/mpeg", // Use "audio/mpeg" instead of "audio/mp3"
-            ptt: false, // Set to true if you want to send as a voice message
-        }, {
-            quoted: m,
-        },
-    );
 };
 
-handler.help = handler.command = ['ytmp3', 'yta'];
+handler.help = ['ytmp3'];
+handler.command = ['ytmp3'];
 handler.tags = ['downloader'];
+
 export default handler;
