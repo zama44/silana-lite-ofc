@@ -1,7 +1,7 @@
 import axios from "axios";
 
 let handler = async (m, { conn, text }) => {
-    if (!text) throw "Please provide a Pinterest video link. Example:\n *.pinterest* https://www.pinterest.com/pin/695102523772320948";
+    if (!text) throw "Please provide a Pinterest video link. Example:\n *.pindl* https://www.pinterest.com/pin/695102523772320948";
 
     try {
         m.reply("المرجو الانتظار قليلا لا تنسى ان تتابع \n instagram.com/noureddine_ouafy");
@@ -35,8 +35,8 @@ let handler = async (m, { conn, text }) => {
     }
 };
 
-handler.help = ["pinterest"];
-handler.command = /^(pinterest)$/i;
+handler.help = ["pindl"];
+handler.command = /^(pindl)$/i;
 handler.tags = ["downloader"];
 
 export default handler;
