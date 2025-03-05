@@ -1,4 +1,4 @@
-import { search, download } from 'aptoide-scraper';
+import axios from 'axios';
 import baileys from '@adiwajshing/baileys';
 
 const { proto, generateWAMessageFromContent, prepareWAMessageMedia } = baileys;
@@ -7,10 +7,7 @@ async function response(jid, data, quoted) {
     let msg = generateWAMessageFromContent(jid, {
         viewOnceMessage: {
             message: {
-                "messageContextInfo": {
-                    "deviceListMetadata": {},
-                    "deviceListMetadataVersion": 2
-                },
+                "messageContextInfo": { "deviceListMetadata": {}, "deviceListMetadataVersion": 2 },
                 interactiveMessage: proto.Message.InteractiveMessage.create({
                     body: proto.Message.InteractiveMessage.Body.create({ text: data.body }),
                     footer: proto.Message.InteractiveMessage.Footer.create({ text: data.footer }),
@@ -20,9 +17,7 @@ async function response(jid, data, quoted) {
                         hasMediaAttachment: data.media ? true : false,
                         ...(data.media ? await prepareWAMessageMedia(data.media, { upload: conn.waUploadToServer }) : {})
                     }),
-                    nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
-                        buttons: data.buttons
-                    })
+                    nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({ buttons: data.buttons })
                 })
             }
         }
@@ -32,73 +27,95 @@ async function response(jid, data, quoted) {
 }
 
 let handler = async (m, { conn, command, usedPrefix, text }) => {
-    if (!text) throw `اكتب اسم التطبيق للبحث عنه، مثال:\n\n${usedPrefix + command} facebook lite`;
-
     if (command === "apk") {
-        const data = await search(text);
-        if (!data.length) throw `لم يتم العثور على أي تطبيق باسم "${text}".`;
+        if (!text) throw `📝 *اكتب اسم التطبيق الذي تريد البحث عنه*:\n\nمثال: ${usedPrefix + command} whatsapp`;
 
-        let sections = [
-            {
-                title: 'التطبيقات المتوفرة',
-                highlight_label: 'Top',
-                rows: data.map(app => ({
+        try {
+            const { data } = await axios.get(`https://api-log-ten.vercel.app/api/download/aptoide?q=${encodeURIComponent(text)}`);
+            if (!data.results.length) throw `❌ لم يتم العثور على أي تطبيق تحت الاسم: "${text}".`;
+
+            let sections = [{
+                title: '📱 التطبيقات المتوفرة',
+                rows: data.results.map(app => ({
                     title: app.name,
-                    description: `عرض تفاصيل "${app.name}"`,
-                    id: `.apkview ${app.id}`
+                    description: `📂 حجم: ${app.size} | 🕒 آخر تحديث: ${app.lastup}`,
+                    id: `.apkview ${app.packageId}`
                 }))
+            }];
+
+            const listMessage = {
+                text: `🔎 *نتائج البحث عن* "${text}":`,
+                footer: 'اختر تطبيقًا لعرض التفاصيل 📥',
+                body: '🔽 الرجاء اختيار التطبيق الذي تريد تحميله:',
+                buttons: [{
+                    name: 'single_select',
+                    buttonParamsJson: JSON.stringify({ title: 'نتائج البحث', sections })
+                }]
+            };
+
+            await response(m.chat, listMessage, m);
+        } catch (error) {
+            if (error.response?.status === 504) {
+                await conn.sendMessage(m.chat, { text: "⚠️ *الخادم لم يستجب في الوقت المحدد.*\n🔄 الرجاء إعادة المحاولة بعد قليل." }, { quoted: m });
+            } else {
+                throw `❌ حدث خطأ أثناء البحث عن التطبيق.`;
             }
-        ];
-
-        const listMessage = {
-            text: `نتائج البحث عن "${text}":`,
-            footer: 'حدد تطبيقًا لعرض تفاصيله',
-            body: 'يرجى اختيار التطبيق الذي تريد تحميله',
-            buttons: [{
-                name: 'single_select',
-                buttonParamsJson: JSON.stringify({
-                    title: 'نتائج بحث التطبيقات',
-                    sections
-                })
-            }]
-        };
-
-        await response(m.chat, listMessage, m);
-
+        }
     } else if (command === "apkview") {
-        const appDetails = await download(text);
-        if (!appDetails) throw `لم يتم العثور على معلومات حول التطبيق "${text}".`;
+        if (!text) throw `❓ *طريقة الاستخدام*:\n${usedPrefix + command} <app packageId>`;
 
-        const details = `*📌 الاسم:* ${appDetails.name}\n*📅 آخر تحديث:* ${appDetails.lastup}\n*📦 الحجم:* ${appDetails.size}\n\n🔽 لتحميل التطبيق، اضغط على الزر أدناه:`;
+        try {
+            const { data } = await axios.get(`https://api-log-ten.vercel.app/api/download/aptoide?q=${encodeURIComponent(text)}`);
+            const app = data.results.find(a => a.packageId === text);
+            if (!app) throw `❌ التطبيق غير موجود!`;
 
-        const buttons = [{
-            name: 'quick_reply',
-            buttonParamsJson: JSON.stringify({
-                display_text: "تحميل التطبيق الآن",
-                id: ".apkget " + appDetails.id
-            })
-        }];
+            const details = `📌 *${app.name}*\n📦 *Package ID:* ${app.packageId}\n🕒 *آخر تحديث:* ${app.lastup}\n📂 *الحجم:* ${app.size}\n\n👇 *تحميل التطبيق من هنا:*`;
 
-        const buttonMessage = {
-            body: details,
-            footer: 'تحميل التطبيقات من Aptoide',
-            buttons,
-            media: { image: { url: appDetails.icon }}
-        };
+            const buttons = [{
+                name: 'quick_reply',
+                buttonParamsJson: JSON.stringify({
+                    display_text: "تحميل التطبيق الآن",
+                    id: ".apkget " + app.packageId
+                })
+            }];
 
-        await response(m.chat, buttonMessage, m);
+            const buttonMessage = {
+                body: details,
+                footer: 'تحميل التطبيقات من Aptoide',
+                buttons,
+                media: { image: { url: app.icon } }
+            };
 
+            await response(m.chat, buttonMessage, m);
+        } catch (error) {
+            if (error.response?.status === 504) {
+                await conn.sendMessage(m.chat, { text: "⚠️ *الخادم لم يستجب في الوقت المحدد.*\n🔄 الرجاء إعادة المحاولة بعد قليل." }, { quoted: m });
+            } else {
+                throw `❌ حدث خطأ أثناء عرض تفاصيل التطبيق.`;
+            }
+        }
     } else if (command === "apkget") {
-        const appData = await download(text);
-        if (!appData || !appData.dllink) throw `تعذر العثور على رابط التحميل للتطبيق "${text}".`;
+        if (!text) throw `❓ *طريقة الاستخدام*:\n${usedPrefix + command} <packageId>`;
 
-        await conn.sendMessage(m.chat, {
-            document: { url: appData.dllink },
-            mimetype: 'application/vnd.android.package-archive',
-            fileName: `${appData.name}.apk`,
-            caption: `تم تحميل التطبيق بنجاح!`,
-            contextInfo: { mentionedJid: [m.sender] }
-        }, { quoted: m });
+        try {
+            const { data } = await axios.get(`https://api-log-ten.vercel.app/api/download/aptoide?q=${encodeURIComponent(text)}`);
+            const app = data.results.find(a => a.packageId === text);
+            if (!app) throw `❌ التطبيق غير موجود!`;
+
+            await conn.sendMessage(m.chat, {
+                document: { url: app.dllink },
+                mimetype: 'application/vnd.android.package-archive',
+                fileName: `${app.name}.apk`,
+                caption: `✅ *تم تحميل التطبيق بنجاح!*\n📦 *${app.name}*`,
+                contextInfo: { mentionedJid: [m.sender] }
+            }, { quoted: m });
+        } catch (error) {
+            if (error.response?.status === 504) {
+                await conn.sendMessage(m.chat, { text: "⚠️ *الخادم لم يستجب في الوقت المحدد.*\n🔄 الرجاء إعادة المحاولة بعد قليل." }, { quoted: m });
+            } else {
+                throw `❌ حدث خطأ أثناء تحميل التطبيق.`;
+            }
+        }
     }
 };
 
