@@ -3,7 +3,7 @@
 Welcome to the official repository of **Silana Lite**, a WhatsApp bot built using `Baileys`, featuring many advanced capabilities.
 
 ## 📌 About Me
-
+ (Im not a developper and I didn't learn any programming languages , i know just copy and past 🤣🤣🙏❤️♥️)
 👤 **Name:** Noureddine  
 📌 **GitHub:** [noureddineouafy](https://github.com/noureddineouafy)  
 📌 **Instagram:** [@noureddine_ouafy](https://instagram.com/noureddine_ouafy)  
