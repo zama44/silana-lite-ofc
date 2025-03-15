@@ -1,37 +1,37 @@
 # Silana Lite - Official Repository
 
-مرحبًا بك في المستودع الرسمي لـ **Silana Lite**، بوت واتساب مبني باستخدام `Baileys` ويتميز بالعديد من الميزات المتقدمة.
+Welcome to the official repository of **Silana Lite**, a WhatsApp bot built using `Baileys`, featuring many advanced capabilities.
 
-## 📌 معلومات عني
+## 📌 About Me
 
-👤 **الإسم:** نور الدين  
+👤 **Name:** Noureddine  
 📌 **GitHub:** [noureddineouafy](https://github.com/noureddineouafy)  
 📌 **Instagram:** [@noureddine_ouafy](https://instagram.com/noureddine_ouafy)  
-📌 **Facebook:** [صفحتي على الفيسبوك](https://www.facebook.com/profile.php?id=100063533185520)  
+📌 **Facebook:** [My Facebook Profile](https://www.facebook.com/profile.php?id=100063533185520)  
 
-## 📺 قنواتي ومنصاتي
+## 📺 My Channels and Platforms
 
-📢 **قناتي على اليوتيوب:**  
-[اضغط هنا](https://youtube.com/@noureddineouafy2?si=rqfc1sb_YxOEYufE) لمشاهدة فيديوهاتي حول تطوير البوتات والمشاريع البرمجية.  
+📢 **My YouTube Channel:**  
+[Click here](https://youtube.com/@noureddineouafy2?si=rqfc1sb_YxOEYufE) to watch my videos on bot development and programming projects.  
 
-📢 **قناتي على الواتساب:**  
-[انضم هنا](https://whatsapp.com/channel/0029VaX4b6J7DAWqt3Hhu01A) للبقاء على اطلاع بآخر التحديثات حول مشاريعي.  
+📢 **My WhatsApp Channel:**  
+[Join here](https://whatsapp.com/channel/0029VaX4b6J7DAWqt3Hhu01A) to stay updated on the latest news about my projects.  
 
-📢 **قناتي الاحتياطية على الواتساب:**  
-[انضم هنا](https://whatsapp.com/channel/0029Vaz5bJz3mFY2ccGBev1n) كقناة احتياطية في حال حدوث أي مشاكل مع القناة الرئيسية.  
+📢 **My Backup WhatsApp Channel:**  
+[Join here](https://whatsapp.com/channel/0029Vaz5bJz3mFY2ccGBev1n) as a backup channel in case any issues arise with the main one.  
 
-## 🚀 حول المشروع
+## 🚀 About the Project
 
-**Silana Lite** هو نسخة محسّنة وخفيفة من بوت Silana، وهو بوت واتساب يدعم العديد من الميزات مثل:  
-- تنزيل الفيديوهات والصور من مواقع مختلفة.  
-- استخدام الذكاء الاصطناعي في الردود والوظائف المتقدمة.  
-- تحويل النصوص إلى صوت بعدة لغات.  
-- ميزات أخرى مخصصة حسب احتياجات المستخدمين.
+**Silana Lite** is an enhanced, lightweight version of the Silana bot. It’s a WhatsApp bot that supports many features such as:  
+- Downloading videos and images from various platforms.  
+- Using AI for responses and advanced functions.  
+- Converting text to speech in multiple languages.  
+- Custom features tailored to user needs.
 
-## 💡 كيفية المساهمة
+## 💡 How to Contribute
 
-إذا كنت ترغب في المساهمة في تطوير هذا المشروع، لا تتردد في عمل `Fork` للمستودع وإرسال `Pull Request` مع التعديلات الخاصة بك.
+If you’d like to contribute to the development of this project, feel free to `Fork` the repository and submit a `Pull Request` with your modifications.
 
 ---
 
-**تابعني على منصاتي لمزيد من التحديثات والمشاريع المستقبلية!** 🚀
+**Follow me on my platforms for more updates and upcoming projects!** 🚀
