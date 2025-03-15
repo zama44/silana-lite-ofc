@@ -8,7 +8,6 @@ export async function before(
   let chat = global.db.data.chats[m.chat];
   let name = conn.getName(m.sender);
   const isAntiLinkHttp = isLinkHttp.test(m.text);
-
   function cek(grup1, grup2) {
     const regex = /^https:\/\/chat\.whatsapp\.com\/[a-zA-Z0-9]{22}$/;
     return regex.test(grup1) && regex.test(grup2) && grup1 === grup2;
