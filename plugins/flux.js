@@ -65,4 +65,5 @@ let handler = async (m, { conn, text }) => {
 handler.help = ['flux'];
 handler.command = ['flux'];
 handler.tags = ['ai'];
+handler.limit = true
 export default handler
