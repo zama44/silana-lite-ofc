@@ -95,5 +95,5 @@ let handler = async (m, { conn, text }) => {
 handler.help = ['pinterest'];
 handler.tags = ['downloader'];
 handler.command = ['pinterest'];
-
+handler.limit = true
 export default handler;
