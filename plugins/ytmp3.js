@@ -14,7 +14,7 @@ let handler = async (m, { conn, text }) => {
 
 handler.help = handler.command = ['ytmp3'];
 handler.tags = ['downloader'];
-handler.limit = 8;
+handler.limit = true ;
 handler.register = false;
 
 export default handler;
