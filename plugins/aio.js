@@ -2,7 +2,7 @@ import axios from "axios";
 
 let handler = async (m, { conn, args }) => {
   if (!args[0]) {
-    return m.reply("❌  يرجى إدخال رابط فيديو من الفيسبوك او الانستغرام قم بعد الامر .");
+    return m.reply("❌  يرجى إدخال رابط فيديو من الفيسبوك او الانستغرام  بعد الامر .");
   }
 
   let url = args[0];
