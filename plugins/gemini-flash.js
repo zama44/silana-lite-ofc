@@ -28,8 +28,8 @@ let handler = async (m, { args }) => {
     }
 };
 
-handler.help = ["gemini2"];
+handler.help = ["gemini-flash"];
 handler.tags = ["ai"];
-handler.command = /^gemini2$/i;
+handler.command = /^gemini-flash$/i;
 handler.limit = true
 export default handler;
