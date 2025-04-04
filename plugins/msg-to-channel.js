@@ -9,7 +9,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     conn.sendMessage(m.chat, { react: { text: "⏳", key: m.key } });
 
     // ENTER CHANNEL ID HERE
-    let idch = 'ADD YOUR CHANNEL ID 🥳';
+    let idch = '120363377578749872@newsletter';
     //. ADD YOUR CHANNEL ID ABOVE 👆👆
     
     let who = m.sender;
