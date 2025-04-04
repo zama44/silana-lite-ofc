@@ -8,7 +8,7 @@ import moment from "moment-timezone";
 
 let handler = async (m, { conn, command }) => {
     switch (command) {
-        case "chlist": {
+        case "channel-list": {
             let id = Object.keys(db.data.chats).filter(a => a.endsWith("@newsletter"));
             let ar = [];
 
