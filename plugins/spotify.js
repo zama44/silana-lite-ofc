@@ -67,7 +67,7 @@ let handler = async (m, { conn, args }) => {
     }
 };
 
-handler.help = ['spotifydl'];
+handler.help = ['spotify'];
 handler.tags = ['downloader'];
 handler.command = ['spotify'];
 handler.limit = true
