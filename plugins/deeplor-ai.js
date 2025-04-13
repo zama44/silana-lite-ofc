@@ -2,15 +2,15 @@ import axios from "axios";
 const { generateWAMessageContent, generateWAMessageFromContent, proto } = (await import('@adiwajshing/baileys')).default;
 
 let handler = async (m, { conn, text }) => {
+  if (!m.isGroup) {
+    return m.reply("هذا الأمر يعمل في المجموعات فقط!");
+  }
   if (!text) {
-    return m.reply("[!] ex: \n *.deeplor-ai* girl");
+    return m.reply("[!] مثال: \n *.deeplor-ai* girl");
   }
   try {
-    if (!m.isGroup) {
-      m.reply("wait");
-    } else if (m.isGroup) {
-      m.reply("انتظر... سيتم إرسال النتائج إلى الدردشة الخاصة");
-    }
+    m.reply("انتظر... جاري إنشاء الصور");
+
     let { result } = await generateImages(text);
 
     // Function to create image message
@@ -51,7 +51,7 @@ let handler = async (m, { conn, text }) => {
 
     // Create and send carousel message
     const bot = generateWAMessageFromContent(
-      m.isGroup ? m.sender : m.chat,
+      m.chat, // إرسال الرسالة إلى المجموعة
       {
         viewOnceMessage: {
           message: {
@@ -79,15 +79,16 @@ let handler = async (m, { conn, text }) => {
       {}
     );
 
-    await conn.relayMessage(m.isGroup ? m.sender : m.chat, bot.message, { messageId: bot.key.id });
+    await conn.relayMessage(m.chat, bot.message, { messageId: bot.key.id }); // إرسال الرسالة إلى المجموعة
   } catch (e) {
-    throw "Error: " + e.message;
+    throw "خطأ: " + e.message;
   }
 };
 
 handler.help = handler.command = ["deeplor-ai"];
 handler.tags = ["ai"];
-handler.limit = true 
+handler.limit = true;
+handler.group = true; // تقييد الأمر ليعمل في المجموعات فقط
 export default handler;
 
 async function generateImages(prompt) {
@@ -180,4 +181,4 @@ async function generateImages(prompt) {
   } catch (error) {
     throw error;
   }
-              }
+}
