@@ -124,5 +124,6 @@ const handler = async (m, { conn, args, command }) => {
 };
 
 handler.help = handler.command = ['egysearch', 'egydetail', 'egydownload'];
+handler.tags = ['downloader'];
 handler.limit = true 
 export default handler;
