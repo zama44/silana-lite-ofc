@@ -8,11 +8,11 @@ command
 }) => {
 let q = m.quoted ? m.quoted : m
 let mime = (m.quoted ? m.quoted : m.msg).mimetype || ''
-if (!/audio/.test(mime)) throw `المرجو الاشارة للمقطع الذي تريد حذف الصوت او الموسيقى الخاص به\n\n @noureddine_ouafy`
+if (!/audio/.test(mime)) throw `المرجو الاشارة للمقطع الذي تريد حذف الصوت او الموسيقى الخاص به\n\n يستحسن ان يكون المقطع لا يتجاوز دقيقتين`
 let media = await q.download?.()
 if (!media) throw 'Can\'t download media'
 
-    m.reply('يرجى التحلي بالصبر، هذه العملية تستغرق بعض الوقت..')
+    m.reply('يرجى التحلي بالصبر، هذه العملية تستغرق بعض الوقت.. \n لا ترسل اي شيء الا بعد ان تتم البوت هذه المهمة والا قد يتم حظرك + يستحسن ان يكون المقطع لا يتجاوز دقيقتين')
 let { vocal_path, instrumental_path } = await vocalRemove(media);
 
     try {
@@ -49,6 +49,7 @@ handler.help = ['vocalremover']
 handler.tags = ['ai']
 handler.limit = true 
 handler.command = /^(vocalremover)$/i
+
 export default handler
 
 const apii = await axios.create({ baseURL: 'https://aivocalremover.com' })
