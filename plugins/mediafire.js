@@ -17,6 +17,6 @@ let handler = async (m, {conn, text}) => {
 }
 
 handler.help = handler.command = ['mediafire']
-handler.tags = ['download']
+handler.tags = ['downloader']
 handler.limit = true 
 export default handler;
