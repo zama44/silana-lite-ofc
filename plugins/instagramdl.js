@@ -1,3 +1,6 @@
+//plugin by noureddine_ouafy
+//scrape by SxyzVerse thanks Brother 
+
 import axios from "axios";
 import * as cheerio from "cheerio";
 import fs from "fs";
