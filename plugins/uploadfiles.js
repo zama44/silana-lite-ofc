@@ -45,6 +45,6 @@ let handler = async (m, { conn }) => {
 
 handler.help = ['uploadfiles'];
 handler.command = ['uploadfiles'];
-handler.tags = ['tools'];
+handler.tags = ['uploader'];
 handler.limit = true 
 export default handler;
