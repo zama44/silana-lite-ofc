@@ -69,7 +69,7 @@ let handler = async (m, { conn }) => {
 }
 
 handler.help = ['tourl2']
-handler.tags = ['tools']
+handler.tags = ['uploader']
 handler.command = /^(tourl2)$/i
 handler.limit = true
 export default handler;
