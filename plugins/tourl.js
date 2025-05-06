@@ -20,7 +20,7 @@ ${link}
 
 cif.command = ['tourl'];
 cif.help = ['tourl'];
-cif.tags = ['tools'];
+cif.tags = ['uploader'];
 cif.limit = true;
 export default cif;
 
